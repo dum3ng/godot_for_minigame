@@ -281,7 +281,8 @@ assert.ok(
 
 const localBuildScript = read("scripts/build_wasm_template.sh");
 assert.ok(localBuildScript.includes("status --porcelain --untracked-files=all"));
-assert.ok(localBuildScript.includes("Expected exactly one JavaScript artifact"));
+assert.ok(localBuildScript.includes('JS_FILE="${WASM_FILE%.wasm}.js"'));
+assert.ok(localBuildScript.includes("Expected exactly one WASM artifact"));
 assert.ok(localBuildScript.includes("GODOT_COPYRIGHT.txt"));
 assert.ok(!localBuildScript.includes("head -1"), "local builds must reject stale ambiguous artifacts");
 

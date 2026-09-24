@@ -136,28 +136,24 @@ fi
 )
 
 shopt -s nullglob
-JS_CANDIDATES=("${SOURCE_DIR}"/bin/godot.web.template_release.wasm32*.js)
 WASM_CANDIDATES=("${SOURCE_DIR}"/bin/godot.web.template_release.wasm32*.wasm)
 shopt -u nullglob
-if [ "${#JS_CANDIDATES[@]}" -ne 1 ] || [ "${#WASM_CANDIDATES[@]}" -ne 1 ]; then
-    echo "Expected exactly one JavaScript artifact and one WASM artifact." >&2
-    printf 'JavaScript candidates (%s):\n' "${#JS_CANDIDATES[@]}" >&2
-    printf '  %s\n' "${JS_CANDIDATES[@]:-<none>}" >&2
+if [ "${#WASM_CANDIDATES[@]}" -ne 1 ]; then
+    echo "Expected exactly one WASM artifact." >&2
     printf 'WASM candidates (%s):\n' "${#WASM_CANDIDATES[@]}" >&2
     printf '  %s\n' "${WASM_CANDIDATES[@]:-<none>}" >&2
     echo "Remove stale build outputs or use a clean GODOT_MINIGAME_BUILD_DIR." >&2
     exit 1
 fi
-JS_FILE="${JS_CANDIDATES[0]}"
 WASM_FILE="${WASM_CANDIDATES[0]}"
-if [ ! -s "$JS_FILE" ] || [ ! -s "$WASM_FILE" ]; then
-    echo "Godot build did not produce non-empty JavaScript and WASM artifacts" >&2
+JS_FILE="${WASM_FILE%.wasm}.js"
+if [ ! -s "$WASM_FILE" ]; then
+    echo "Godot build did not produce a non-empty WASM artifact" >&2
     exit 1
 fi
-if [ "${JS_FILE%.js}" != "${WASM_FILE%.wasm}" ]; then
-    echo "JavaScript and WASM artifact stems do not match:" >&2
+if [ ! -s "$JS_FILE" ]; then
+    echo "Missing non-empty JavaScript artifact matching the WASM stem:" >&2
     echo "  $JS_FILE" >&2
-    echo "  $WASM_FILE" >&2
     exit 1
 fi
 
